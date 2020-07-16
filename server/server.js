@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose')
+const passport = require('passport')
 const app = express();
+
 
 const config = require('./config/config')
 
@@ -15,6 +17,12 @@ mongoose.connect(config.CONNECTION_URI, {
   .catch((err) => console.log(err))
 mongoose.Promise = global.Promise
 mongoose.set('debug', true)
+
+// Passport Middle waere
+app.use(passport.initialize())
+
+//Passport config jwtstrategy
+require('./config/passport')(passport)
 
 // apis
 app.use('/api/users', require('./router/api/users'))
