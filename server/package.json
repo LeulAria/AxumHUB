@@ -1,0 +1,28 @@
+{
+  "name": "axumhub",
+  "version": "1.0.0",
+  "description": "an online colaboration opensource hub",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "axumhub",
+    "blog",
+    "qa",
+    "tech",
+    "hub"
+  ],
+  "author": "axumhub",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.24",
+    "passport": "^0.4.1",
+    "passport-jwt": "^4.0.0",
+    "validator": "^13.1.1"
+  }
+}
