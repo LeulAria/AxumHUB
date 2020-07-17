@@ -1,13 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const passport = require('passport')
+const cors = require('cors')({ origin: true });
 const app = express();
-
 
 const config = require('./config/config')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cors);
 
 mongoose.connect(config.CONNECTION_URI, {
   useNewUrlParser: true,
@@ -26,5 +27,6 @@ require('./config/passport')(passport)
 
 // apis
 app.use('/api/users', require('./router/api/users'))
+app.use('/api/profile', require('./router/api/profile'))
 
 app.listen(config.PORT, () => console.log(`Server started on http://localhost:${config.PORT}`))
