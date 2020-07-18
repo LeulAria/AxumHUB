@@ -9,7 +9,6 @@ const validateProfileInput = require('../../validation/profile')
 const validateExperianceInput = require('../../validation/experiance')
 const validateEducationInput = require('../../validation/education')
 
-
 // @route  GET api/proifle
 // @desc   Get current user profile
 // @access Public

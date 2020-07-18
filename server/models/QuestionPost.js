@@ -32,10 +32,7 @@ const QuestionPostSchema = new Schema({
         type: String,
         required: true
       },
-      name: {
-        type: String,
-      },
-      upvoates: [
+      like: [
         {
           user: {
             type: Schema.Types.ObjectId,
@@ -49,7 +46,7 @@ const QuestionPostSchema = new Schema({
       }
     }
   ],
-  tag: [String],
+  tags: [String],
   date: {
     type: Date,
     default: Date.now

@@ -28,5 +28,10 @@ require('./config/passport')(passport)
 // apis
 app.use('/api/users', require('./router/api/users'))
 app.use('/api/profile', require('./router/api/profile'))
+app.use('/api/question_post', require('./router/api/question_post'))
 
-app.listen(config.PORT, () => console.log(`Server started on http://localhost:${config.PORT}`))
+const server = app.listen(config.PORT, () => console.log(`Server started on http://localhost:${config.PORT}`))
+
+module.exports = server
+
+require('./router/api/socket/chat');
