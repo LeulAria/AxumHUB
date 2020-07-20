@@ -54,7 +54,7 @@ const ProjectSchema = new Schema({
   },
   data: {
     type: Date,
-    default: date
+    default: Date.now
   }
 })
 

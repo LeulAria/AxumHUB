@@ -57,12 +57,17 @@ router.get('/:id', (req, res) => {
 // @desc   Ceate a new Question Post
 // @access Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
+
+
+  console.log('we are here...')
   const { errors, isValid } = validateQuestionPostInput(req.body);
 
   if (!isValid) {
+    console.log('naa the form is not valid', errors, req.body)
     return res.status(400).json(errors)
   }
-
+  
+  console.log('wohoo the form is valid....')
   const newQuestionPost = new QuestionPost({
     user: req.user.id,
     title: req.body.title,
@@ -132,14 +137,20 @@ router.post('/unlike/:id', passport.authenticate('jwt', { session: false }), (re
 // @desc   Answer on a post
 // @access Private
 router.post('/answer/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  console.log('---------------------------')
+  console.log('the req body: ', req.body)
+  console.log('we are here.....')
   const { errors, isValid } = validateQuestionAnswerInput(req.body)
 
   if (!isValid) {
+    console.log('ohh holly sheet their is errors.......', errors, isValid)
     return res.status(400).json(errors)
   }
 
+  console.log('no error found on the reqeust...----------------')
   QuestionPost.findById(req.params.id)
     .then(question => {
+      console.log('found the question.......')
       if (!question) {
         return res.status(404).json({ nopost: 'Question post not found' })
       }
@@ -148,17 +159,21 @@ router.post('/answer/:id', passport.authenticate('jwt', { session: false }), (re
         user: req.user.id,
         answer: req.body.answer,
       }
+      console.log('creating a new answer: ', newAnswer)
 
       question.answers.unshift(newAnswer);
       return question.save()
     })
-    .then((post) => res.json(post))
+    .then((post) => {
+      console.log('alrity wo wtf is mappening')
+      console.log(post)
+      res.json(post)
+    })
     .catch((err) => {
       console.log(err)
       return res.status(404).json({ nopost: 'Question post not found' })
     })
 })
-
 
 // @route  Delete api/question_post/:id/answer/:answer
 // @desc   Delete Answer on a post
@@ -188,7 +203,6 @@ router.delete('/:id/answer/:answer_id', passport.authenticate('jwt', { session: 
       res.status(404).json({ noquestion: 'Question not found' })
     })
 })
-
 
 // @route  Delete api/question_post/:id
 // @desc   Delete Question

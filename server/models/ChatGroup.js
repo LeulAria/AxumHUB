@@ -45,7 +45,15 @@ const ChatGroupSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  joinrequests: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+      }
+    }
+  ]
 })
 
 const ChatGroup = mongoose.model('chatgroup', ChatGroupSchema)

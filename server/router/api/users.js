@@ -110,7 +110,7 @@ router.post('/login', (req, res) => {
             return res.status(500).json(errors)
           }
 
-          return res.json({ success: true, token: 'Bearer ' + token })
+          return res.json({ success: true, token: 'Bearer ' + token, user: payload })
         }
       )
     }).catch(err => {

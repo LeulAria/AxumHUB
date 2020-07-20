@@ -12,7 +12,7 @@ module.exports = function validateQuestionPostInput(data) {
   if (Validator.isEmpty(data.description))
     errors.description = 'Description field is required'
 
-  if (Validator.isLength(data.title, { min: 5, max: 40 }))
+  if (Validator.isLength(data.title, { min: 3, max: 30 }))
     errors.title = "Title field should between 5- 40 "
 
   return {
