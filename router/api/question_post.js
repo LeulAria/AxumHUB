@@ -57,8 +57,6 @@ router.get('/:id', (req, res) => {
 // @desc   Ceate a new Question Post
 // @access Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-
-
   console.log('we are here...')
   const { errors, isValid } = validateQuestionPostInput(req.body);
 
@@ -66,7 +64,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
     console.log('naa the form is not valid', errors, req.body)
     return res.status(400).json(errors)
   }
-  
+
   console.log('wohoo the form is valid....')
   const newQuestionPost = new QuestionPost({
     user: req.user.id,
