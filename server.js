@@ -28,6 +28,11 @@ app.use(passport.initialize())
 //Passport config jwtstrategy
 require('./config/passport')(passport)
 
+// test
+app.get('/', (req, res) => {
+  res.send('<h1 style="font-family: monospace; text-align: center; margin-top: 5em;">axum-hub api</h1>')
+})
+
 // apis
 app.use('/api/users', require('./router/api/users'))
 app.use('/api/profile', require('./router/api/profile'))
