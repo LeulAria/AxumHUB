@@ -5,8 +5,7 @@ const cors = require('cors')({ origin: true });
 const app = express();
 
 // Production Environment
-process.env.NODE_ENV = "production"
-
+// process.env.NODE_ENV = "production"
 
 const config = require('./config/config')
 
