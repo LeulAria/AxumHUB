@@ -20,7 +20,8 @@ router.get('/', (req, res) => {
 // @access Public
 router.get('/all', (req, res) => {
   Project.find()
-    .populate('user', ['name'])
+    .populate('admins', ['name'])
+    .populate('contributers', ['name'])
     .sort({ date: -1 })
     .then(projects => {
       if (!projects) {
@@ -66,8 +67,8 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 
   const newProject = new Project({
     author: req.user.id,
-    admins: [{ admin: req.user.id }],
-    contributers: [{ admin: req.user.id }],
+    admins: [req.user.id],
+    contributers: [req.user.id],
     title: req.body.title,
     summary: req.body.summary,
     version: req.body.version,
@@ -86,7 +87,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
     console.log('new grup created.......')
     newGroup = new ChatGroup({
       name: req.body.chatgroupname,
-      members: [{ member: req.user.id }],
+      members: [req.user.id],
       project: newProject._id
     })
     newProject.chatgroup = newGroup._id;
@@ -94,10 +95,9 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 
   newProject.save()
     .then((project) => {
-      console.log('............project created............', project)
       if (project) {
         if (newGroup) {
-          console.log('thir is group')
+          console.log('their is group')
           return newGroup.save()
         }
         else
@@ -108,13 +108,28 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       }
     })
     .then((chatgroup) => {
-      console.log('............chatgroup created............', chatgroup)
       if (chatgroup)
         res.json(newProject)
       else
         throw new Error("Project hasn't been created")
     })
     .catch((err) => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+
+// @route  GET api/project/:id/admins
+// @desc   Get all admins of the project
+// @access Public
+router.get('/:id/admins', (req, res) => {
+  Project.findById(req.params.id)
+    .populate('admins', ['name'])
+    .then((project) => {
+      res.json(project.admins)
+    })
+    .catch(err => {
       console.log(err)
       res.status(400).json(err)
     })

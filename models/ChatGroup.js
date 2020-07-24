@@ -12,26 +12,22 @@ const ChatGroupSchema = new Schema({
   },
   members: [
     {
-      member: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   ],
   chats: [
     {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-      },
-      message: {
-        type: String,
-        required: true
-      },
-      date: {
-        type: Date,
-        default: Date.now
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    },
+    {
+      type: String,
+      required: true
+    },
+    {
+      type: Date,
+      default: Date.now
     }
   ],
   date: {
@@ -40,10 +36,8 @@ const ChatGroupSchema = new Schema({
   },
   joinrequests: [
     {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   ]
 })

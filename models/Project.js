@@ -16,10 +16,8 @@ const ProjectSchema = new Schema({
   },
   contributers: [
     {
-      contributer: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   ],
   version: {
@@ -57,10 +55,8 @@ const ProjectSchema = new Schema({
   },
   admins: [
     {
-      admin: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'user'
     }
   ],
   projectgroup: {
