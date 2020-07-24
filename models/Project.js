@@ -11,7 +11,8 @@ const ProjectSchema = new Schema({
     required: true
   },
   summary: {
-    type: String
+    type: String,
+    required: true
   },
   contributers: [
     {
@@ -27,18 +28,32 @@ const ProjectSchema = new Schema({
   },
   licence: {
     type: String,
-    required: true
+    default: '1.0.0'
   },
-  developmentModel: {
+  developmentmodel: {
     type: String
   },
   tools: [String],
-  rating: Number,
+  stars: {
+    type: Number,
+    default: 0
+  },
   website: {
     type: String
   },
   githubrepolink: {
     type: String,
+  },
+  createchatgroup: {
+    type: Boolean,
+    deafult: true
+  },
+  chatgroupname: {
+    type: String
+  },
+  chatgroup: {
+    type: Schema.Types.ObjectId,
+    ref: 'chatgroup'
   },
   admins: [
     {

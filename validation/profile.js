@@ -20,17 +20,10 @@ module.exports = function validateProfileInput(data) {
     errors.handle = 'Profile handle field is required'
   if (Validator.isEmpty(data.status))
     errors.status = 'Status field is required'
-  if (Validator.isEmpty(data.status))
-    errors.skills = 'Skills field is required'
 
   if (!Validator.isEmpty(data.website)) {
     if (!Validator.isURL(data.website)) {
       errors.website = 'Not a valid URL'
-    }
-  }
-  if (!Validator.isEmpty(data.youtube)) {
-    if (!Validator.isURL(data.youtube)) {
-      errors.youtube = 'Not a valid URL'
     }
   }
   if (!Validator.isEmpty(data.facebook)) {

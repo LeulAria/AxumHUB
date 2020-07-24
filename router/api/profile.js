@@ -86,8 +86,15 @@ router.get('/user/:user_id', (req, res) => {
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
 
-  if (!isValid)
+  console.log('-----------req------------', req.body)
+
+  if (!isValid) {
+    console.log('the error is: ', errors)
     return res.status(400).json(errors)
+  }
+
+  console.log('sending request.................................its ok...............')
+  console.log(req.body)
 
   const profileFields = {};
   profileFields.user = req.user.id;
@@ -110,15 +117,17 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 
   if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
   if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
-  if (req.body.twitter) profileFisocial.twitter = req.body.twitter;
+  if (req.body.twitter) profileFields.twitter = req.body.twitter;
   if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
   if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
+  console.log('ok lets send this: ', profileFields)
   Profile.findOne({ user: req.user.id })
     .then(profile => {
       if (profile) {
+        console.log('found profile.........................:', profile)
         return Profile.findOneAndUpdate({ user: req.user.id },
-          { $set: profileFields.handle })
+          profileFields)
       } else {
         Profile.findOne({ handle: profileFields.handle })
           .then((req, res) => {
@@ -130,7 +139,14 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
           })
       }
     })
-    .then(profile => res.json(profile))
+    .then(profile => {
+      console.log('the profile has been the thing...........')
+      return Profile.findOne({ user: req.user.id })
+    })
+    .then(profile => {
+      console.log('profile is.............', profile)
+      res.json(profile)
+    })
     .catch((err) => {
       console.log(err)
       res.status(400).json(err)
@@ -179,8 +195,9 @@ router.post('/experiance', passport.authenticate('jwt', { session: false }), (re
 router.post('/education', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateEducationInput(req.body);
 
-  if (!isValid)
+  if (!isValid) {
     res.status(400).json(errors)
+  }
 
   Profile.findOne({ user: req.user.id })
     .then(profile => {
@@ -199,12 +216,11 @@ router.post('/education', passport.authenticate('jwt', { session: false }), (req
       }
 
       profile.education.unshift(newEducation)
-
       return profile.save()
     })
     .then(profile => res.json(profile))
     .catch(err => {
-      console.log(err)
+      console.log('error hapend: ', err)
       errors.profile = 'Profile not found for this user';
       return res.status.json(errors)
     })

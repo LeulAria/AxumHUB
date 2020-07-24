@@ -8,7 +8,7 @@ module.exports = validateExperianceInput = (data) => {
   data.company = !isEmpty(data.company) ? data.company : '';
   data.from = !isEmpty(data.from) ? data.from : '';
 
-  if (!Validator.isLength(data.title, { min: 10, max: 40 }))
+  if (!Validator.isLength(data.title, { min: 5, max: 40 }))
     errors.title = 'Title must be between 10 & 40 characters'
 
   if (Validator.isEmpty(data.title))

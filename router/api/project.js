@@ -2,10 +2,10 @@ const express = require('express')
 const router = express.Router()
 const passport = require('passport')
 const Project = require('../../models/Project')
+const ChatGroup = require('../../models/ChatGroup')
 
 // // Validation
-// const validateQuestionPostInput = require('../../validation/question_post')
-// const validateQuestionAnswerInput = require('../../validation/question_answer')
+const validateProjectInput = require('../../validation/project')
 
 
 // @route  GET api/question_post
@@ -14,7 +14,6 @@ const Project = require('../../models/Project')
 router.get('/', (req, res) => {
   res.json({ msg: 'this is project post route' })
 })
-
 
 // @route  GET api/question_post/all
 // @desc   Get all question posts
@@ -38,7 +37,7 @@ router.get('/all', (req, res) => {
 
 // @route  Get api/question_post/:id
 // @desc   Get single post item by id
-// @access Publit
+// @access Public
 router.get('/:id', (req, res) => {
   Project.findById(req.params.id)
     .populate('user', ['name'])
@@ -58,33 +57,63 @@ router.get('/:id', (req, res) => {
 // @desc   Ceate a new Question Post
 // @access Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
-  const { errors, isValid } = validateQuestionPostInput(req.body);
+  const { errors, isValid } = validateProjectInput(req.body);
 
   if (!isValid) {
+    console.log('error occured: ', errors)
     return res.status(400).json(errors)
   }
 
   const newProject = new Project({
     author: req.user.id,
+    admins: [{ admin: req.user.id }],
+    contributers: [{ admin: req.user.id }],
     title: req.body.title,
     summary: req.body.summary,
     version: req.body.version,
     licence: req.body.licence,
-    developmentModel: req.body.developmentModel,
+    developmentmodel: req.body.developmentmodel,
     tools: req.body.tools && req.body.tools.split(',').map(tag => tag.trim()),
-    rating: req.body.rating,
     website: req.body.website,
     githubrepolink: req.body.githubrepolink,
+    createchatgroup: req.body.createchatgroup,
+    chatgroupname: req.body.chatgroupname
   })
 
-  const newGroup = new ChatGroup({
-
-  })
-
-  // newProject.projectgroup = new newGroup.id 
+  let newGroup = null;
+  console.log(typeof req.body.createchatgroup, req.body.createchatgroup)
+  if (req.body.createchatgroup) {
+    console.log('new grup created.......')
+    newGroup = new ChatGroup({
+      name: req.body.chatgroupname,
+      members: [{ member: req.user.id }],
+      project: newProject._id
+    })
+    newProject.chatgroup = newGroup._id;
+  }
 
   newProject.save()
-    .then((project) => res.json(project))
+    .then((project) => {
+      console.log('............project created............', project)
+      if (project) {
+        if (newGroup) {
+          console.log('thir is group')
+          return newGroup.save()
+        }
+        else
+          return res.json(project)
+      }
+      else {
+        throw new Error("Project hasn't been created")
+      }
+    })
+    .then((chatgroup) => {
+      console.log('............chatgroup created............', chatgroup)
+      if (chatgroup)
+        res.json(newProject)
+      else
+        throw new Error("Project hasn't been created")
+    })
     .catch((err) => {
       console.log(err)
       res.status(400).json(err)
