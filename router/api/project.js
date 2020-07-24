@@ -126,10 +126,21 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 router.get('/:id/admins', (req, res) => {
   Project.findById(req.params.id)
     .populate('admins', ['name'])
-    .then((project) => {
-      res.json(project.admins)
-    })
+    .then(({ admins }) => res.json(admins))
     .catch(err => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+// @route  GET api/project/:id/admins
+// @desc   Get all admins of the project
+// @access Public
+router.get('/:id/contributers', (req, res) => {
+  Project.findById(req.params.id)
+    .populate('contributers', ['name', 'email'])
+    .then(({ contributers }) => res.json(contributers))
+    .catch((err) => {
       console.log(err)
       res.status(400).json(err)
     })
