@@ -6,6 +6,7 @@ const ChatGroup = require('../../models/ChatGroup')
 
 // // Validation
 const validateProjectInput = require('../../validation/project')
+const { json } = require('express')
 
 
 // @route  GET api/question_post
@@ -143,6 +144,56 @@ router.get('/:id/contributers', (req, res) => {
     .catch((err) => {
       console.log(err)
       res.status(400).json(err)
+    })
+})
+
+
+// @route  GET api/project/:id/admins
+// @desc   Get all admins of the project
+// @access Private
+router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findByIdAndUpdate(req.params.id, req.body)
+    .then((project) => {
+      return Project.findById(req.params.id)
+    })
+    .then((project => res.json(project)))
+    .catch((err) => {
+      console.log(err)
+      res.json(err)
+    })
+})
+
+
+// @route  GET api/project/:id/admins
+// @desc   Get all admins of the project
+// @access Private
+router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  let project;
+  Project.findById(req.params.id)
+    .then((project) => {
+      let admins = project.admins.filter((admins) => admins._id == req.user.id)
+
+      console.log(admins)
+      if (admins == 0) {
+        res.status(403).json({ unauthorized: 'User not admin' })
+      } else {
+        Project.findById(req.params.id)
+          .then((project) => {
+            if (!project)
+              return res.status(403).json({ notfound: 'Project not found' })
+            project = project;
+            return ChatGroup.findByIdAndRemove(project.chatgroup)
+          })
+          .then(() => {
+            return project.remove()
+          })
+          .then(() => {
+            return res.json({ success: true })
+          })
+          .catch(err => {
+            console.log(err)
+          })
+      }
     })
 })
 
