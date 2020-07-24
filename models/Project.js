@@ -14,12 +14,6 @@ const ProjectSchema = new Schema({
     type: String,
     required: true
   },
-  contributers: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'user'
-    }
-  ],
   version: {
     type: String,
     required: true
@@ -54,6 +48,18 @@ const ProjectSchema = new Schema({
     ref: 'chatgroup'
   },
   admins: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    }
+  ],
+  contributers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    }
+  ],
+  joinrequests: [
     {
       type: Schema.Types.ObjectId,
       ref: 'user'

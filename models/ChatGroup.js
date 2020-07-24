@@ -10,12 +10,6 @@ const ChatGroupSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'project'
   },
-  members: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'user'
-    }
-  ],
   chats: [
     {
       type: Schema.Types.ObjectId,
@@ -33,13 +27,7 @@ const ChatGroupSchema = new Schema({
   date: {
     type: Date,
     default: Date.now
-  },
-  joinrequests: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'user'
-    }
-  ]
+  }
 })
 
 const ChatGroup = mongoose.model('chatgroup', ChatGroupSchema)

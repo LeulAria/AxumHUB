@@ -7,6 +7,7 @@ const ChatGroup = require('../../models/ChatGroup')
 // // Validation
 const validateProjectInput = require('../../validation/project')
 const { json } = require('express')
+const { remove } = require('../../models/Project')
 
 
 // @route  GET api/question_post
@@ -23,6 +24,7 @@ router.get('/all', (req, res) => {
   Project.find()
     .populate('admins', ['name'])
     .populate('contributers', ['name'])
+    .populate('joinrequests', ['name'])
     .sort({ date: -1 })
     .then(projects => {
       if (!projects) {
@@ -127,7 +129,11 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
 router.get('/:id/admins', (req, res) => {
   Project.findById(req.params.id)
     .populate('admins', ['name'])
-    .then(({ admins }) => res.json(admins))
+    .then((project) => {
+      if (!project)
+        res.status(404).json({ noproject: 'No project found' })
+      res.json(project.admins)
+    })
     .catch(err => {
       console.log(err)
       res.status(400).json(err)
@@ -140,7 +146,11 @@ router.get('/:id/admins', (req, res) => {
 router.get('/:id/contributers', (req, res) => {
   Project.findById(req.params.id)
     .populate('contributers', ['name', 'email'])
-    .then(({ contributers }) => res.json(contributers))
+    .then((project) => {
+      if (project)
+        res.status(404).json({ noproject: 'No project found' })
+      res.json(project.contributers)
+    })
     .catch((err) => {
       console.log(err)
       res.status(400).json(err)
@@ -148,11 +158,120 @@ router.get('/:id/contributers', (req, res) => {
 })
 
 
-// @route  GET api/project/:id/admins
+// @route  GET api/project/:id/apply
 // @desc   Get all admins of the project
 // @access Private
+router.post('/:id/apply', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findById(req.params.id)
+    .then((project) => {
+      if (!project)
+        return res.status(404).json({ noproject: 'Project not found' })
+      if (project.joinrequests.includes(req.user.id))
+        return res.status(400).json({ applied: 'User already applied' })
+
+      project.joinrequests.push(req.user.id)
+      return project.save()
+    })
+    .then(() => {
+      Project.findById(req.params.id)
+        .then((project) => {
+          res.json(project)
+        })
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+
+// @route  GET api/project/:id/applicants
+// @desc   Get applicant users to join project
+// @access Private
+router.get('/:id/applicants', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findById(req.params.id)
+    .populate('joinrequests', ['name', 'email'])
+    .then((project) => {
+      if (!project)
+        res.status(404).json({ noproject: 'Project not found' })
+      if (!isAdmin(project.admins, req.user.id))
+        res.status(403).json({ unauthorized: 'User not authorized.' })
+
+      res.json(project.joinrequests)
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+
+// @route  POST api/project/:id
+// @desc   accept a user to join the group
+// @access Private
+router.post('/:id/user/:user_id/accept', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findById(req.params.id)
+    .then((project) => {
+      if (!project)
+        res.status(404).json({ noproject: 'Project not found' })
+      if (!isAdmin(project.admins, req.user.id))
+        res.status(403).json({ unauthorized: 'User not authorized.' })
+      const user = project.joinrequests.indexOf(req.params.user_id)
+      if (user == -1)
+        res.status(400).json({ notfound: 'User not found' })
+      project.joinrequests.splice(user, 1);
+      project.contributers.push(req.params.user_id)
+      return project.save()
+    })
+    .then((project) => {
+      Project.findById(req.params.id)
+        .then(project => res.json(project))
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+// @route  POST api/project/:id
+// @desc   accept a user to join the group
+// @access Private
+router.post('/:id/user/:user_id/reject', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findById(req.params.id)
+    .then((project) => {
+      if (!project)
+        res.status(404).json({ noproject: 'Project not found' })
+      if (!isAdmin(project.admins, req.user.id))
+        res.status(403).json({ unauthorized: 'User not authorized.' })
+      const user = project.contributers.indexOf(req.params.user_id)
+      if (user == -1)
+        res.status(400).json({ notfound: 'User not found' })
+      project.contributers.splice(user, 1);
+      project.joinrequests.splice(user, 1);
+      return project.save()
+    })
+    .then((project) => {
+      Project.findById(req.params.id)
+        .then(project => res.json(project))
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+// @route  GET api/project/:id
+// @desc   Put update project
+// @access Private
 router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
-  Project.findByIdAndUpdate(req.params.id, req.body)
+  Project.findById(req.params.id)
+    .then((project) => {
+      if (!project)
+        res.status(404).json({ noproject: 'Project not found' })
+      if (!isAdmin(project.admins, req.user.id))
+        res.status(403).json({ unauthorized: 'User not authorized.' })
+      return Project.findByIdAndUpdate(req.params.id, req.body)
+    })
     .then((project) => {
       return Project.findById(req.params.id)
     })
@@ -164,38 +283,49 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), (req, res) 
 })
 
 
-// @route  GET api/project/:id/admins
-// @desc   Get all admins of the project
+// @route  Delete api/project/:id/admins
+// @desc   Delete a Project
 // @access Private
 router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
   let project;
   Project.findById(req.params.id)
     .then((project) => {
-      let admins = project.admins.filter((admins) => admins._id == req.user.id)
+      if (!isAdmin(project.admins, req.user.id))
+        return res.status(403).json({ unauthorized: 'User not admin' })
 
-      console.log(admins)
-      if (admins == 0) {
-        res.status(403).json({ unauthorized: 'User not admin' })
-      } else {
-        Project.findById(req.params.id)
-          .then((project) => {
-            if (!project)
-              return res.status(403).json({ notfound: 'Project not found' })
-            project = project;
-            return ChatGroup.findByIdAndRemove(project.chatgroup)
-          })
-          .then(() => {
-            return project.remove()
-          })
-          .then(() => {
-            return res.json({ success: true })
-          })
-          .catch(err => {
-            console.log(err)
-          })
-      }
+      Project.findById(req.params.id)
+        .then((project) => {
+          if (!project)
+            return res.status(403).json({ notfound: 'Project not found' })
+          project = project;
+          return ChatGroup.findByIdAndRemove(project.chatgroup)
+        })
+        .then(() => {
+          return project.remove()
+        })
+        .then(() => {
+          return res.json({ success: true })
+        })
+        .catch(err => {
+          console.log(err)
+        })
     })
 })
+
+
+
+
+function isAdmin(admins, user_id) {
+  return admins.filter((admin) => admin._id == user_id).length == 0 ? false : true
+}
+
+
+
+
+
+
+
+
 
 
 // contributers
