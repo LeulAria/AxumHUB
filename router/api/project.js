@@ -40,6 +40,18 @@ router.get('/all', (req, res) => {
 })
 
 // @route  Get api/question_post/:id
+// @desc   Get user projects
+// @access Public
+router.get('/user_projects/:id', (req, res) => {
+  Project.find({ author: req.params.id })
+    .then(projects => res.json(projects))
+    .catch(err => {
+      console.log(err)
+      res.status(400).json()
+    })
+})
+
+// @route  Get api/question_post/:id
 // @desc   Get single post item by id
 // @access Public
 router.get('/:id', (req, res) => {

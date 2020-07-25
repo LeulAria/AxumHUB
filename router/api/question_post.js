@@ -52,6 +52,18 @@ router.get('/:id', (req, res) => {
     })
 })
 
+// @route  Post api/question_post/user_questions/:id
+// @desc   Get user posted questions
+// @access Private
+router.get('/user_questions/:id', (req, res) => {
+  QuestionPost.find({ user: req.params.id })
+    .then(questions => res.json(questions))
+    .catch(err => {
+      console.log(err)
+      res.status(400).json()
+    })
+})
+
 
 // @route  Post api/question_post/create
 // @desc   Ceate a new Question Post
