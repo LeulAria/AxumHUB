@@ -77,4 +77,32 @@ router.post('/create', passport.authenticate('jwt', { session: false }), upload.
 })
 
 
+router.put('/:id', passport.authenticate('jwt', { session: false }), upload.single('blogImage'), (req, res) => {
+  const { errors, isValid } = validateBlogInput(req.body);
+  if (!isValid) {
+    console.log(errors)
+    res.status(400).json(errors)
+  }
+  req.body.blogimage = req.file && req.file.filename || undefined;
+
+  Blog.findById(req.params.id)
+    .then(blog => {
+      if (!blog)
+        res.status(404).json({ noblog: "Blog not found" })
+      if (!blog.author === req.user.id)
+        res.status(403).json({ unauthorized: "User not authorized" })
+
+      return Blog.findByIdAndUpdate(req.params.id, req.body)
+    })
+    .then((blog) => {
+      Blog.findById(blog)
+        .populate('author', ['name'])
+        .then(blog => res.json(blog))
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(404).json({ noblog: "Blog not found" })
+    })
+})
+
 module.exports = router
