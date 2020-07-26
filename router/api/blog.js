@@ -105,4 +105,22 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), upload.sing
     })
 })
 
+
+router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Blog.findById(req.params.id)
+    .then(blog => {
+      if (!blog)
+        res.status(404).json({ noblog: "Blog not found" })
+      if (!blog.author === req.user.id)
+        res.status(403).json({ unauthorized: "User not authorized" })
+
+      return Blog.findByIdAndRemove(req.params.id, req.body)
+    })
+    .then((blog) => res.json({ Success: true }))
+    .catch((err) => {
+      console.log(err)
+      res.status(404).json({ noblog: "Blog not found" })
+    })
+})
+
 module.exports = router
