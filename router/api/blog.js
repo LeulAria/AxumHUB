@@ -48,4 +48,33 @@ router.get('/user/:id', (req, res) => {
     })
 })
 
+router.post('/create', passport.authenticate('jwt', { session: false }), upload.single('blogImage'), (req, res) => {
+  const { errors, isValid } = validateBlogInput(req.body);
+  if (!isValid) {
+    console.log(errors)
+    res.status(400).json(errors)
+  }
+
+  const newBlog = new Blog({
+    author: req.user.id,
+    title: req.body.title,
+    body: req.body.body,
+    slug: req.body.slug,
+    blogimage: req.file.filename
+  })
+
+  newBlog.save()
+    .then(blog => {
+      console.log('the blog: ', blog)
+      Blog.findById(blog.id)
+        .populate('author', ['name'])
+        .then(blog => res.json(blog))
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+
 module.exports = router
