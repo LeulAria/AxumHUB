@@ -5,8 +5,8 @@ const cors = require('cors')({ origin: true });
 const app = express();
 
 // Production Environment
-process.env.NODE_ENV = "production"
-// process.env.NODE_ENV = "development"
+// process.env.NODE_ENV = "production"
+process.env.NODE_ENV = "development"
 
 const config = require('./config/config')
 
@@ -34,11 +34,15 @@ app.get('/', (req, res) => {
   res.send('<h1 style="font-family: monospace; text-align: center; margin-top: 5em;">axum-hub api</h1>')
 })
 
+// images route
+app.use('/axumhub/upload_medias', express.static('uploads'))
+
 // apis
 app.use('/api/users', require('./router/api/users'))
 app.use('/api/profile', require('./router/api/profile'))
 app.use('/api/question_post', require('./router/api/question_post'))
 app.use('/api/project', require('./router/api/project'))
+app.use('/api/blog', require('./router/api/blog'))
 
 const server = app.listen(config.PORT, () => console.log(`Server started on http://localhost:${config.PORT}`))
 
