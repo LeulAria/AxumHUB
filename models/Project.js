@@ -65,10 +65,6 @@ const ProjectSchema = new Schema({
       ref: 'user'
     }
   ],
-  projectgroup: {
-    type: Schema.Types.ObjectId,
-    ref: 'chatgroup'
-  },
   data: {
     type: Date,
     default: Date.now

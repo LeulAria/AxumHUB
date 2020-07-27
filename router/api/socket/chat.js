@@ -1,4 +1,5 @@
 const server = require('../../../server')
+const Chat = require('../../../models/ChatGroup')
 const socket = require('socket.io')
 const io = socket(server)
 
