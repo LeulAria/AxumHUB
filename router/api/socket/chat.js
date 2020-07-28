@@ -1,21 +1,27 @@
 const server = require('../../../server')
 const Chat = require('../../../models/ChatGroup')
+const Uesr = require("../../../models/User")
 const socket = require('socket.io')
 const io = socket(server)
+
+const formatChatMessage = require('./formatChatMessage')
 
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected...`)
 
   // myFirstEmit Event
-  socket.emit('myFirstEmit', 'this is my frist emit when connected to the server')
 
-  socket.emit('test', 'socket connection is enabled and i am sending this message')
+  socket.emit('connected', 'socket connection is enabled and i am sending this message')
 
-  socket.broadcast.emit('test', 'user has joined chat room')
+  socket.broadcast.emit('connected', 'user has joined chat room')
 
-  socket.on("sendChat", (msg) => {
-    io.emit('test', msg)
-    console.log('usermsg: ', msg)
+  socket.on("sendChat", (chatPayload) => {
+    // save to chat   user Id, projectName or ChatId, push to chats: [{  }]
+    // Chat.findById()
+
+    console.log('recieved msg: ', chatPayload)
+    // io.emit('getChatMsg', { message: chatPayload.message, user: chatPayload.user })
+    io.emit('getChatMsg', formatChatMessage(chatPayload))
   })
 
   socket.on('userEvent', (msg) => {

@@ -41,6 +41,36 @@ router.get('/user_projects/:id', (req, res) => {
     })
 })
 
+
+// @route  Get api/project/:id
+// @desc   Get user joined projects
+// @access Public
+router.get('/joined', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const joinedProjects = [];
+  Project.find({ admins: req.user.id })
+    .then(projects => {
+      projects.forEach(project => {
+        if (project.author.toString() != req.user.id) {
+          joinedProjects.push(project)
+        }
+      })
+      return Project.find({ contributers: req.user.id })
+    })
+    .then((projects => {
+      projects.forEach(project => {
+        if (project.auther !== req.user.id) {
+          joinedProjects.push(project)
+        }
+      })
+      return res.json(joinedProjects)
+    }))
+    .catch(err => {
+      console.log(err)
+      res.status(400).json()
+    })
+})
+
+
 // @route  Get api/poject/:id
 // @desc   Get single post item by id
 // @access Public
@@ -339,7 +369,7 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, re
 
 
 function isFound(collection, user_id) {
-  return collection.filter((item) => item._id == user_id).length == 0 ? false : true
+  return collection.filter((item) => item._id.toString() == user_id).length == 0 ? false : true
 }
 
 
