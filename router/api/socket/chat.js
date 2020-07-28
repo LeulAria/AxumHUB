@@ -19,8 +19,6 @@ io.on('connection', (socket) => {
     // save to chat   user Id, projectName or ChatId, push to chats: [{  }]
     // Chat.findById()
 
-    console.log('recieved msg: ', chatPayload)
-    // io.emit('getChatMsg', { message: chatPayload.message, user: chatPayload.user })
     io.emit('getChatMsg', formatChatMessage(chatPayload))
   })
 
