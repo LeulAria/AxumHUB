@@ -61,8 +61,14 @@ const ProjectSchema = new Schema({
   ],
   joinrequests: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'user'
+      userid: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+      },
+      projectid: {
+        type: Schema.Types.ObjectId,
+        ref: 'project'
+      }
     }
   ],
   data: {

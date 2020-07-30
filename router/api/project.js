@@ -14,7 +14,21 @@ router.get('/all', (req, res) => {
   Project.find()
     .populate('admins', ['name'])
     .populate('contributers', ['name'])
-    .populate('joinrequests', ['name'])
+    .populate({
+      path: 'joinrequests',
+      populate: [
+        {
+          path: 'userid',
+          model: 'user',
+          select: '_id name'
+        },
+        {
+          path: 'projectid',
+          model: 'project',
+          select: '_id title'
+        }
+      ]
+    })
     .sort({ date: -1 })
     .then(projects => {
       if (!projects) {
@@ -29,11 +43,27 @@ router.get('/all', (req, res) => {
     })
 })
 
+
 // @route  Get api/question_post/:id
 // @desc   Get user projects
 // @access Public
 router.get('/user_projects/:id', (req, res) => {
   Project.find({ author: req.params.id })
+    .populate({
+      path: 'joinrequests',
+      populate: [
+        {
+          path: 'userid',
+          model: 'user',
+          select: '_id name'
+        },
+        {
+          path: 'projectid',
+          model: 'project',
+          select: '_id title'
+        }
+      ]
+    })
     .then(projects => res.json(projects))
     .catch(err => {
       console.log(err)
@@ -223,7 +253,7 @@ router.post('/:id/apply', passport.authenticate('jwt', { session: false }), (req
       if (project.joinrequests.includes(req.user.id))
         return res.status(400).json({ applied: 'User already applied' })
 
-      project.joinrequests.push(req.user.id)
+      project.joinrequests.push({ userid: req.user.id, projectid: req.params.id })
       return project.save()
     })
     .then(() => {
@@ -258,7 +288,6 @@ router.get('/:id/applicants', passport.authenticate('jwt', { session: false }), 
       res.status(400).json(err)
     })
 })
-
 
 // @route  POST api/project/:id
 // @desc   accept a user to join the group

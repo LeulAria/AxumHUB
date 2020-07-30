@@ -9,7 +9,15 @@ const formatChatMessage = require('./formatChatMessage')
 io.on('connection', (socket) => {
   console.log(`user ${socket.id} connected...`)
 
-  // myFirstEmit Event
+  // join a user to specific group
+  socket.on('joinGroupChat', ({ username, userid, roomid }) => {
+    console.log('here the user to join------------------------------------------------------: ', username, userid, roomid)
+
+    socket.join(roomid)
+    // show user online
+
+    socket.broadcast.emit('userJoinedOnline', userid)
+  })
 
   socket.emit('connected', 'socket connection is enabled and i am sending this message')
 
