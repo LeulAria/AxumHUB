@@ -12,16 +12,22 @@ const ChatGroupSchema = new Schema({
   },
   chats: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'user'
-    },
-    {
-      type: String,
-      required: true
-    },
-    {
-      type: Date,
-      default: Date.now
+      user: {
+        type: String,
+        required: true
+      },
+      id: {
+        type: String,
+        required: true
+      },
+      message: {
+        type: String,
+        required: true
+      },
+      date: {
+        type: String,
+        required: true
+      }
     }
   ],
   date: {

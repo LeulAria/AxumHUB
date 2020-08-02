@@ -21,18 +21,32 @@ io.on('connection', (socket) => {
 
     socket.join(roomid)
 
-    io.to('fuck').emit('msg', username + 'this is from room id: ' + roomid)
+    // send if thier is saved chats
+    Chat.findOne({ name: roomid })
+      .then((chat) => {
+        socket.emit('saved_chats', chat.chats)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
   })
 
-
+  // Send chat to chat board and save to database
   socket.on("sendChat", (chatPayload) => {
-    // save to chat   user Id, projectName or ChatId, push to chats: [{  }]
-    // Chat.findById()
-    console.log(chatPayload)
+    const chatMsg = formatChatMessage(chatPayload);
 
     console.log('socket rooms: ', socket.rooms)
+    // save chat msg to db
+    Chat.findOne({ name: chatPayload.roomid })
+      .then((chat) => {
+        chat.chats.push(chatMsg)
+        chat.save()
+      })
+      .catch(err => {
+        console.log(err)
+      })
 
-    io.to(chatPayload.roomid).emit('showChat', formatChatMessage(chatPayload))
+    io.to(chatPayload.roomid).emit('showChat', chatMsg)
   })
 
 
