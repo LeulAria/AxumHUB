@@ -55,17 +55,22 @@ router.post('/create', passport.authenticate('jwt', { session: false }), upload.
     res.status(400).json(errors)
   }
 
+
+
+  console.log('image file name: ....: ', req.file.filename)
+
   const newBlog = new Blog({
     author: req.user.id,
     title: req.body.title,
     body: req.body.body,
     slug: req.body.slug,
-    blogimage: req.file.filename
+    tags: req.body.tags.split(',').map(tag => tag.trim()),
+    blogimage: req.file ? req.file.filename : 'default_image.png'
   })
 
   newBlog.save()
     .then(blog => {
-      console.log('the blog: ', blog)
+      console.log('the blog=++++++: ', blog)
       Blog.findById(blog.id)
         .populate('author', ['name'])
         .then(blog => res.json(blog))
