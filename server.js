@@ -1,18 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const passport = require('passport')
-const cors = require('cors')({ origin: true });
+const cors = require('cors')
 const app = express();
 
 // Production Environment
-// process.env.NODE_ENV = "production"
-process.env.NODE_ENV = "development"
-
-const config = require('./config/config')
+process.env.NODE_ENV = "production"
+// process.env.NODE_ENV = "development"
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(cors);
+app.use(cors());
+
+const config = require('./config/config')
 
 mongoose.connect(config.CONNECTION_URI, {
   useNewUrlParser: true,
