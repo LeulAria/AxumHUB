@@ -56,9 +56,6 @@ router.post('/create', passport.authenticate('jwt', { session: false }), upload.
   }
 
 
-
-  console.log('image file name: ....: ', req.file.filename)
-
   const newBlog = new Blog({
     author: req.user.id,
     title: req.body.title,

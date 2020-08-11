@@ -7,16 +7,14 @@ const bcrypt = require('bcryptjs')
 const keys = require('../../config/config')
 const passport = require('passport')
 
+const upload = require('../../utils/multer-config')
+
 // Models
 const User = require('../../models/User')
 
 // Validation 
 const validateRegisterInput = require('../../validation/register')
 const validateLoginInput = require('../../validation/login')
-
-router.get('/', (req, res) => {
-  res.send('user routes...')
-})
 
 // @route  POST api/users/register
 // @desc   Register User
@@ -128,6 +126,34 @@ router.get('/current', passport.authenticate('jwt', { session: false }), (req, r
     name: req.user.name,
     email: req.user.email
   })
+})
+
+// @route GET api/users/
+router.get('/', (req, res) => {
+  User.find().
+    select('email avatar name').
+    then((users) => res.json(users))
+    .catch((err) => {
+      console.log(err)
+      res.status(400).json(err)
+    })
+})
+
+router.post('/avatar', passport.authenticate('jwt', { session: false }), upload.single('avatar'), (req, res) => {
+  if (req.file.filename)
+    User.findById(req.user.id)
+      .then((user) => {
+        user.avatar = req.file.filename;
+        return user.save()
+      })
+      .then((user) => {
+        console.log('this is the user: ', user)
+        return res.json({ avatar: user.avatar })
+      })
+      .catch((err) => {
+        res.status(404).json(err)
+        console.log(err)
+      })
 })
 
 module.exports = router
