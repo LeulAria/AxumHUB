@@ -4,7 +4,7 @@ const passport = require('passport')
 const Project = require('../../models/Project')
 const ChatGroup = require('../../models/ChatGroup')
 
-// // Validation
+// Validation
 const validateProjectInput = require('../../validation/project')
 
 // @route  GET api/question_post/all
@@ -106,9 +106,9 @@ router.get('/joined', passport.authenticate('jwt', { session: false }), (req, re
 // @access Public
 router.get('/:id', (req, res) => {
   Project.findById(req.params.id)
-    .populate('author', ['name'])
-    .populate('contributers', ['name'])
-    .populate('admins', ['name'])
+    .populate('author', ['name', 'avatar'])
+    .populate('contributers', ['name', 'avatar'])
+    .populate('admins', ['name', 'avatar'])
     .then(project => {
       if (!project) {
         return res.status(404).json({ nopost: "Project not found" })
@@ -121,11 +121,11 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.get('/chat/:chatgroupname', passport.authenticate('jwt', { session: false }), (req, res) => {
+router.get("/chat/:chatgroupname", passport.authenticate("jwt", { session: false }), (req, res) => {
   Project.findOne({ chatgroupname: req.params.chatgroupname })
-    .populate('contributers', ['name'])
-    .populate('admins', ['name'])
-    .populate('chatgroup', ['name', 'chats'])
+    .populate("contributers", ["name", "avatar"])
+    .populate("admins", ["name", "avatar"])
+    .populate("chatgroup", ["name", "chats"])
     .then((project) => {
       if (!project) {
         return res.status(404).json({ nopost: "Project not found" })

@@ -8,6 +8,7 @@ const keys = require('../../config/config')
 const passport = require('passport')
 
 const upload = require('../../utils/multer-config')
+const mediaURI = require("../../server")
 
 // Models
 const User = require('../../models/User')
@@ -34,15 +35,21 @@ router.post('/register', (req, res) => {
         const newUser = new User({
           name: req.body.name,
           email: req.body.email,
-          password: req.body.password
+          password: req.body.password,
+          avatar: "https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/girl_female_woman_avatar-512.png"
         })
+
+        console.log('new user data: ', newUser)
 
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
             if (err) throw err
             newUser.password = hash;
             newUser.save()
-              .then(user => res.status(201).json(user))
+              .then(user => {
+                console.log('user data here: ', user)
+                res.status(201).json(user)
+              })
               .catch(err => {
                 console.log(err)
                 res.status(500).json(err)
@@ -94,7 +101,7 @@ router.post('/login', (req, res) => {
         id: curr_user.id,
         name: curr_user.name,
         email: curr_user.email,
-        // avatar: curr_user.avatar
+        avatar: curr_user.avatar
       }
 
       console.log(payload)
@@ -143,11 +150,10 @@ router.post('/avatar', passport.authenticate('jwt', { session: false }), upload.
   if (req.file.filename)
     User.findById(req.user.id)
       .then((user) => {
-        user.avatar = req.file.filename;
+        user.avatar = mediaURI + req.file.filename;
         return user.save()
       })
       .then((user) => {
-        console.log('this is the user: ', user)
         return res.json({ avatar: user.avatar })
       })
       .catch((err) => {

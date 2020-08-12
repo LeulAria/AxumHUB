@@ -5,8 +5,13 @@ const cors = require('cors')
 const app = express();
 
 // Production Environment
-// process.env.NODE_ENV = "production"
-process.env.NODE_ENV = "development"
+// process.env.NODE_ENV = "development"
+process.env.NODE_ENV = "production"
+
+// uploaded medias
+// module.exports = mediaURI = 'http://localhost:8000/axumhub/upload_medias/';
+module.exports = mediaURI = 'https://axumhub.herokuapp.com/axumhub/upload_medias/';
+
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

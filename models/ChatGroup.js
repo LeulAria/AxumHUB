@@ -20,6 +20,10 @@ const ChatGroupSchema = new Schema({
         type: String,
         required: true
       },
+      avatar: {
+        type: String,
+        default: 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/girl_female_woman_avatar-512.png'
+      },
       message: {
         type: String,
         required: true

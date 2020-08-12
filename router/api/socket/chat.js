@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
           socket.emit('saved_chats', chat.chats)
         else
           socket.emit('saved_chats', [])
-      }) 
+      })
       .catch((err) => {
         console.log(err)
       })
