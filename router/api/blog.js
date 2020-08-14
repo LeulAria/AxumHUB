@@ -9,7 +9,7 @@ const validateBlogInput = require('../../validation/blog')
 
 router.get('/all', (req, res) => {
   Blog.find()
-    .populate('author', ['name'])
+    .populate('author', ['name', 'avatar'])
     .then(blog => {
       if (!blog)
         res.status(404).json({ noblog: "No Blog found" })
@@ -23,7 +23,7 @@ router.get('/all', (req, res) => {
 
 router.get('/user_blogs', passport.authenticate('jwt', { session: false }), (req, res) => {
   Blog.find({ author: req.user.id })
-    .populate('author', ['name'])
+    .populate('author', ['name', 'avatar'])
     .then(blog => {
       if (!blog)
         res.status(404).json({ noblog: "No Blog found" })
@@ -49,12 +49,8 @@ router.get('/user/:id', (req, res) => {
 })
 
 router.post('/create', passport.authenticate('jwt', { session: false }), upload.single('blogImage'), (req, res) => {
-  const { errors, isValid } = validateBlogInput(req.body);
-  if (!isValid) {
-    console.log(errors)
-    res.status(400).json(errors)
-  }
-
+  console.log('Creating a BLOG: ', req.body.postType)
+  console.log('Creating a BLOG+=========: ', req.body)
 
   const newBlog = new Blog({
     author: req.user.id,
@@ -62,6 +58,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), upload.
     body: req.body.body,
     slug: req.body.slug,
     tags: req.body.tags.split(',').map(tag => tag.trim()),
+    postType: req.body.postType,
     blogimage: req.file ? req.file.filename : 'default_image.png'
   })
 
@@ -69,7 +66,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), upload.
     .then(blog => {
       console.log('the blog=++++++: ', blog)
       Blog.findById(blog.id)
-        .populate('author', ['name'])
+        .populate('author', ['name', 'avatar'])
         .then(blog => res.json(blog))
     })
     .catch(err => {
@@ -98,7 +95,7 @@ router.put('/:id', passport.authenticate('jwt', { session: false }), upload.sing
     })
     .then((blog) => {
       Blog.findById(blog)
-        .populate('author', ['name'])
+        .populate('author', ['name', 'avatar'])
         .then(blog => res.json(blog))
     })
     .catch((err) => {

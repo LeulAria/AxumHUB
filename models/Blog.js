@@ -7,20 +7,16 @@ const BlogSchema = new Schema({
     ref: 'user'
   },
   title: {
-    type: String,
-    required: true
+    type: String
   },
   body: {
-    type: String,
-    required: true
-  },
-  slug: {
-    type: String,
-    required: true
+    type: String
   },
   blogimage: {
-    type: String,
-    required: true
+    type: String
+  },
+  postType: {
+    type: String
   },
   likes: [
     {
@@ -28,6 +24,27 @@ const BlogSchema = new Schema({
       ref: 'user'
     }
   ],
+  jobtitle: {
+    type: String
+  },
+  company: {
+    type: String
+  },
+  jobtype: {
+    type: String
+  },
+  phone: {
+    type: String
+  },
+  email: {
+    type: String
+  },
+  adress: {
+    type: String
+  },
+  description: {
+    type: String
+  },
   date: {
     type: Date,
     default: Date.now

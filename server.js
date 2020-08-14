@@ -3,15 +3,20 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 const cors = require('cors')
 const app = express();
+// .env config
+require('dotenv').config()
 
-// Production Environment
-// process.env.NODE_ENV = "development"
-process.env.NODE_ENV = "production"
+// app run mode
+// process.env.MODE = "development";
+process.env.MODE = "production";
 
-// uploaded medias
-// module.exports = mediaURI = 'http://localhost:8000/axumhub/upload_medias/';
-module.exports = mediaURI = 'https://axumhub.herokuapp.com/axumhub/upload_medias/';
-
+if (process.env.MODE == "development") {
+  process.env.NODE_ENV = "development"
+  module.exports = mediaURI = "http://localhost:8000/axumhub/upload_medias/";
+} else {
+  process.env.NODE_ENV = "production"
+  module.exports = mediaURI = "https://axumhub.herokuapp.com/axumhub/upload_medias/";
+}
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
