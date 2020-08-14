@@ -59,7 +59,7 @@ router.get('/handle/:handle', (req, res) => {
 // @desc   Get User profile useing user id
 // @access Public
 router.get('/user/:user_id', (req, res) => {
-  const errors = {};
+  const errors = {}
 
   Profile.findOne({ user: req.params.user_id })
     .populate('user', ['name'])
@@ -86,14 +86,11 @@ router.get('/user/:user_id', (req, res) => {
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
 
-  console.log('-----------req------------', req.body)
-
   if (!isValid) {
     console.log('the error is: ', errors)
     return res.status(400).json(errors)
   }
 
-  console.log('sending request.................................its ok...............')
   console.log(req.body)
 
   const profileFields = {};
@@ -121,11 +118,9 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
   if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
   if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
 
-  console.log('ok lets send this: ', profileFields)
   Profile.findOne({ user: req.user.id })
     .then(profile => {
       if (profile) {
-        console.log('found profile.........................:', profile)
         return Profile.findOneAndUpdate({ user: req.user.id },
           profileFields)
       } else {
@@ -140,12 +135,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
       }
     })
     .then(profile => {
-      console.log('the profile has been the thing...........')
-      return Profile.findOne({ user: req.user.id })
-    })
-    .then(profile => {
-      console.log('profile is.............', profile)
-      res.json(profile)
+      return res.json(profile)
     })
     .catch((err) => {
       console.log(err)

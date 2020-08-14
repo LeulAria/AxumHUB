@@ -12,6 +12,7 @@ const mediaURI = require("../../server")
 
 // Models
 const User = require('../../models/User')
+const Profile = require('../../models/Profile')
 
 // Validation 
 const validateRegisterInput = require('../../validation/register')
@@ -38,8 +39,6 @@ router.post('/register', (req, res) => {
           password: req.body.password,
           avatar: "https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/girl_female_woman_avatar-512.png"
         })
-
-        console.log('new user data: ', newUser)
 
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -115,7 +114,19 @@ router.post('/login', (req, res) => {
             return res.status(500).json(errors)
           }
 
-          return res.json({ success: true, token: 'Bearer ' + token, user: payload })
+          Profile.findOne({ user: payload.id }).then((profile) => {
+            if (profile) {
+              return res.json({ success: true, token: 'Bearer ' + token, user: payload })
+            } else {
+              const userProfile = new Profile({
+                user: payload.id
+              })
+
+              userProfile.save().then(() => {
+                return res.json({ success: true, token: 'Bearer ' + token, user: payload })
+              })
+            }
+          })
         }
       )
     }).catch(err => {

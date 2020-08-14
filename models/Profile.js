@@ -8,16 +8,13 @@ const ProfileSchema = new Schema({
   },
   handle: {
     type: String,
-    required: true,
     max: 40
   },
   status: {
     type: String,
-    required: true
   },
   skills: {
     type: [String],
-    required: true
   },
   osp_interested: {
     type: Boolean,
@@ -32,6 +29,9 @@ const ProfileSchema = new Schema({
     type: String
   },
   githubusername: {
+    type: String
+  },
+  bio: {
     type: String
   },
   experiance: [
