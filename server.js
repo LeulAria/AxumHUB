@@ -1,7 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose')
-const passport = require('passport')
-const cors = require('cors')
+const mongoose = require('mongoose');
+const passport = require('passport');
+const cors = require('cors');
 const app = express();
 // .env config
 require('dotenv').config()
@@ -53,6 +53,7 @@ app.use('/api/profile', require('./router/api/profile'))
 app.use('/api/question_post', require('./router/api/question_post'))
 app.use('/api/project', require('./router/api/project'))
 app.use('/api/blog', require('./router/api/blog'))
+app.use('/api/email', require('./router/api/email'))
 
 const server = app.listen(config.PORT, () => console.log(`Server started on http://localhost:${config.PORT}`))
 

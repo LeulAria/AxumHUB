@@ -81,7 +81,6 @@ router.post('/login', (req, res) => {
       return user
     })
     .then(user => {
-      console.log(user)
       if (!user) {
         errors.error = "User not found"
         res.status(404).json(errors)
