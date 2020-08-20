@@ -4,6 +4,9 @@ const passport = require('passport')
 const Project = require('../../models/Project')
 const ChatGroup = require('../../models/ChatGroup')
 
+const upload = require('../../utils/multer-config')
+const mediaURI = require("../../server")
+
 // Validation
 const validateProjectInput = require('../../validation/project')
 
@@ -395,6 +398,91 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, re
     })
 })
 
+
+// @route  Get api/poject/:id/uploads
+// @desc   Get project uploads
+// @access Public
+router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), upload.single('file'), (req, res) => {
+  // if (req) {
+  const uploadData = {
+    userid: req.user.id,
+    filename: req.file.filename,
+    fileuir: mediaURI + req.file.filename
+  }
+
+  Project.findById(req.params.id)
+    .then((project) => {
+      console.log('+++++++++++++++++++++: ', project)
+      project.uploads.unshift(uploadData)
+      return project.save()
+    })
+    .then((project) => {
+      console.log('after saving the file: ', project)
+      res.json(project)
+    })
+    .catch((err) => {
+      console.log('cash wtf')
+      res.json(err)
+    })
+})
+
+// @route  Get api/poject/:id/uploads
+// @desc   Get project uploads
+// @access Public
+router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), upload.single('file'), (req, res) => {
+  // if (req) {
+  const uploadData = {
+    userid: req.user.id,
+    filename: req.file.filename,
+    fileuir: mediaURI + req.file.filename
+  }
+
+  Project.findById(req.params.id)
+    .then((project) => {
+      console.log('+++++++++++++++++++++: ', project)
+      project.uploads.unshift(uploadData)
+      return project.save()
+    })
+    .then((project) => {
+      console.log('after saving the file: ', project)
+      res.json(project)
+    })
+    .catch((err) => {
+      console.log('cash wtf')
+      res.json(err)
+    })
+})
+
+
+// @route  Delete api/poject/:id/uploads
+// @desc   Delete project uploads
+// @access Public
+router.delete('/:id/uploads/:upload_id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Project.findById(req.params.id)
+    .then((project) => {
+      const isAdmin = isFound(project.admins, req.user.id)
+      const uploadedFile = project.uploads.filter((upload) => upload._id == req.params.upload_id)[0]
+      const isUploader = uploadedFile.userid == req.user.id;
+
+      // checking if the user is admin or not
+      if (!isAdmin && !isUploader)
+        return res.json({ error: 'user not authorized!' })
+
+      console.log(req.params.upload_id)
+      const uploadedFileIndex = project.uploads.map(upload => upload.id).indexOf(req.params.upload_id)
+
+      project.uploads.splice(uploadedFileIndex, 1)
+      console.log(project.uploads)
+      return project.save()
+    })
+    .then((project) => {
+      res.json(project.uploads)
+    })
+    .catch((err) => {
+      console.log(err)
+      res.json(err)
+    })
+})
 
 
 function isFound(collection, user_id) {

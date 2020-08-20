@@ -30,7 +30,7 @@ router.post('/register', (req, res) => {
   User.findOne({ email: req.body.email })
     .then(user => {
       if (user) {
-        errors.email = 'Email is already taken';
+        errors.error = 'Email is already taken';
         return res.status(400).json(errors)
       } else {
         const newUser = new User({
@@ -83,7 +83,7 @@ router.post('/login', (req, res) => {
     .then(user => {
       if (!user) {
         errors.error = "User not found"
-        res.status(404).json(errors)
+        throw newError(res.status(404).json(errors))
       }
 
       curr_user = user;
@@ -91,7 +91,7 @@ router.post('/login', (req, res) => {
     })
     .then(isMatch => {
       if (!isMatch) {
-        errors.password = 'Incorrect Password'
+        errors.error = 'Incorrect Password'
         return res.status(400).json(errors)
       }
 
@@ -130,7 +130,7 @@ router.post('/login', (req, res) => {
       )
     }).catch(err => {
       console.log(err)
-      res.status(400).json({ nouser: 'User not found' })
+      res.status(400).json({ error: 'user no found!' })
     })
 });
 

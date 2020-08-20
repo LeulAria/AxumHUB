@@ -71,6 +71,24 @@ const ProjectSchema = new Schema({
       }
     }
   ],
+  uploads: [
+    {
+      userid: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+      },
+      filename: {
+        type: String
+      },
+      fileuir: {
+        type: String
+      },
+      date: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
   data: {
     type: Date,
     default: Date.now
