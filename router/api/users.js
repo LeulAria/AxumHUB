@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const axios = require('axios')
 
 // auth
 const jwt = require('jsonwebtoken')
@@ -171,5 +172,93 @@ router.post('/avatar', passport.authenticate('jwt', { session: false }), upload.
         console.log(err)
       })
 })
+
+// @route  POST api/users/etp
+// @desc   Sign In With ETP
+// @access Public
+router.post("/etp", async (req, res) => {
+  const code = req.body.code;
+
+  if (!code) return res.status(400).json({ detail: "There is no code" });
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `${process.env.ETP_URL}/o/token/`,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      data: `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=authorization_code&code=${code}`,
+    });
+
+    let config = {
+      headers: { Authorization: `Bearer ${response.data.access_token}` },
+    };
+
+    const user_response = await axios.get(
+      `${process.env.ETP_URL}/api/users/o/userinfo/`,
+      config
+    );
+
+    const data = user_response.data;
+
+    const user = await User.findOne({ email: data.email });
+
+    if (user) {
+      jwt.sign(data, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+        if (err) {
+          errors.error = "Token Error..";
+          return res.status(500).json(errors);
+        }
+
+        Profile.findOne({ user: user.id }).then(() => {
+          return res.json({
+            success: true,
+            token: "Bearer " + token,
+            user: data,
+          });
+        });
+      });
+    } else {
+      const newUser = new User({
+        name: data.username,
+        email: data.email,
+        password: data.uuid,
+        avatar: data.picture,
+      });
+      await newUser.save();
+      jwt.sign(data, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+        if (err) {
+          return res.status(500).json({ detail: "Token Error." });
+        }
+
+        Profile.findOne({ user: newUser.id }).then((profile) => {
+          if (profile) {
+            return res.json({
+              success: true,
+              token: "Bearer " + token,
+              user: data,
+            });
+          } else {
+            const userProfile = new Profile({
+              user: newUser.id,
+            });
+
+            userProfile.save().then(() => {
+              return res.json({
+                success: true,
+                token: "Bearer " + token,
+                user: data,
+              });
+            });
+          }
+        });
+      });
+    }
+  } catch (er) {
+    if (er.response) {
+      return res.status(400).json(er.response.data);
+    }
+    return res.status(400).json(er);
+  }
+});
 
 module.exports = router
