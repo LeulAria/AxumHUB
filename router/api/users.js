@@ -22,8 +22,8 @@ const validateLoginInput = require('../../validation/login')
 // @route  POST api/users/register
 // @desc   Register User
 // @access Public
-router.post('/register', (req, res) => {
-  const { errors, isValid } = validateRegisterInput(req.body);
+router.post('/register', async (req, res) => {
+  const { errors, isValid } = await validateRegisterInput(req.body);
 
   if (!isValid)
     return res.status(400).json(errors)
