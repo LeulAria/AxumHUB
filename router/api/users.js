@@ -60,7 +60,7 @@ router.post('/register', (req, res) => {
     })
 });
 
-// @route  POST api/usrs/login
+// @route  POST api/users/login
 // @desc   Login | send JWT
 // @access Public
 router.post('/login', (req, res) => {
@@ -136,7 +136,7 @@ router.post('/login', (req, res) => {
 });
 
 // @route  GET api/users/current
-// @desc   Get currently loged in user
+// @desc   Get currently logged in user
 // @access Private
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({

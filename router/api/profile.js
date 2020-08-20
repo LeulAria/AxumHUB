@@ -9,7 +9,7 @@ const validateProfileInput = require('../../validation/profile')
 const validateExperianceInput = require('../../validation/experiance')
 const validateEducationInput = require('../../validation/education')
 
-// @route  GET api/proifle
+// @route  GET api/profile
 // @desc   Get current user profile
 // @access Public
 router.get('/all', (req, res) => {
@@ -31,7 +31,7 @@ router.get('/all', (req, res) => {
     })
 })
 
-// @route  GET api/proifle
+// @route  GET api/profile
 // @desc   Get User Profile by handle 
 // @access Public
 router.get('/handle/:handle', (req, res) => {
@@ -55,7 +55,7 @@ router.get('/handle/:handle', (req, res) => {
 })
 
 
-// @route  GET api/proifle/user/:user_id
+// @route  GET api/profile/user/:user_id
 // @desc   Get User profile useing user id
 // @access Public
 router.get('/user/:user_id', (req, res) => {
@@ -80,8 +80,8 @@ router.get('/user/:user_id', (req, res) => {
 
 
 
-// @route  POST api/proifle
-// @desc   create and update profiele
+// @route  POST api/profile
+// @desc   create and update profiles
 // @access Private
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateProfileInput(req.body);
@@ -144,8 +144,8 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 })
 
 
-// @route  POST api/proifle/experiance
-// @desc   create experiance field
+// @route  POST api/profile/experiance
+// @desc   create experience field
 // @access Private
 router.post('/experiance', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateExperianceInput(req.body);
@@ -156,7 +156,7 @@ router.post('/experiance', passport.authenticate('jwt', { session: false }), (re
   Profile.findOne({ user: req.user.id })
     .then((profile) => {
       if (!profile) {
-        errors.noprofile = 'Pofile not found'
+        errors.noprofile = 'Profile not found'
         return res.status(404).json(errors)
       }
 
@@ -179,7 +179,7 @@ router.post('/experiance', passport.authenticate('jwt', { session: false }), (re
     })
 })
 
-// @route  POST api/proifle/education
+// @route  POST api/Profile/education
 // @desc   create education field
 // @access Private
 router.post('/education', passport.authenticate('jwt', { session: false }), (req, res) => {
@@ -343,7 +343,7 @@ router.delete('/', passport.authenticate('jwt', { session: false }), (req, res) 
     .then(() => res.json({ success: true }))
     .catch(err => {
       console.log(err)
-      res.status(404).json({ noprofile: 'Pofile not found' })
+      res.status(404).json({ noprofile: 'Profile not found' })
     })
 })
 

@@ -19,7 +19,7 @@ module.exports = function validateProjectInput(data) {
     errors.licence = 'Licence field is required'
 
   if (!Validator.isLength(data.title, { max: 30 }))
-    errors.title = "Title field shoudnt exceed 40characters"
+    errors.title = "Title field shouldn't exceed 40 characters"
 
   return {
     errors,
