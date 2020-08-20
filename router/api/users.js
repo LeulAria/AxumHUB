@@ -203,7 +203,13 @@ router.post("/etp", async (req, res) => {
     const user = await User.findOne({ email: data.email });
 
     if (user) {
-      jwt.sign(data, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+      const payload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+      }
+      jwt.sign(payload, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
         if (err) {
           errors.error = "Token Error..";
           return res.status(500).json(errors);
@@ -213,7 +219,7 @@ router.post("/etp", async (req, res) => {
           return res.json({
             success: true,
             token: "Bearer " + token,
-            user: data,
+            user: payload,
           });
         });
       });
@@ -225,7 +231,13 @@ router.post("/etp", async (req, res) => {
         avatar: data.picture,
       });
       await newUser.save();
-      jwt.sign(data, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+      const payload = {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        avatar: newUser.avatar
+      }
+      jwt.sign(payload, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
         if (err) {
           return res.status(500).json({ detail: "Token Error." });
         }
@@ -235,7 +247,7 @@ router.post("/etp", async (req, res) => {
             return res.json({
               success: true,
               token: "Bearer " + token,
-              user: data,
+              user: payload,
             });
           } else {
             const userProfile = new Profile({
@@ -246,7 +258,7 @@ router.post("/etp", async (req, res) => {
               return res.json({
                 success: true,
                 token: "Bearer " + token,
-                user: data,
+                user: payload,
               });
             });
           }
