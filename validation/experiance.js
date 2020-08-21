@@ -12,11 +12,11 @@ module.exports = validateExperianceInput = (data) => {
     errors.title = 'Title must be between 10 & 40 characters'
 
   if (Validator.isEmpty(data.title))
-    errors.title = 'Title field is requried'
+    errors.title = 'Title field is required'
   if (Validator.isEmpty(data.company))
-    errors.company = 'Company field is requried'
+    errors.company = 'Company field is required'
   if (Validator.isEmpty(data.from))
-    errors.from = 'From field is requried'
+    errors.from = 'From field is required'
 
   return {
     errors,

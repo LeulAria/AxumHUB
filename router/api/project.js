@@ -35,14 +35,14 @@ router.get('/all', (req, res) => {
     .sort({ date: -1 })
     .then(projects => {
       if (!projects) {
-        res.status(400).json({ projects: 'No Questions Foud...' })
+        res.status(400).json({ projects: 'No Questions Found...' })
       }
 
       res.json(projects)
     })
     .catch(err => {
       console.log(err)
-      res.status(400).json({ noquestions: 'No Questions Foud...' })
+      res.status(400).json({ noquestions: 'No Questions Found...' })
     })
 })
 
@@ -104,7 +104,7 @@ router.get('/joined', passport.authenticate('jwt', { session: false }), (req, re
 })
 
 
-// @route  Get api/poject/:id
+// @route  Get api/project/:id
 // @desc   Get single post item by id
 // @access Public
 router.get('/:id', (req, res) => {
@@ -141,19 +141,19 @@ router.get("/chat/:chatgroupname", passport.authenticate("jwt", { session: false
     })
     .catch(err => {
       console.log(err)
-      return res.status(404).json({ nopost: "Projct not found" })
+      return res.status(404).json({ nopost: "Project not found" })
     })
 })
 
 
 // @route  Post api/project/create
-// @desc   Ceate a new Question Post
+// @desc   Create a new Question Post
 // @access Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
   const { errors, isValid } = validateProjectInput(req.body);
 
   if (!isValid) {
-    console.log('error occured: ', errors)
+    console.log('error occurred: ', errors)
     return res.status(400).json(errors)
   }
 
@@ -175,7 +175,7 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
   let newGroup = null;
   console.log(typeof req.body.createchatgroup, req.body.createchatgroup)
   if (req.body.createchatgroup) {
-    console.log('new grup created.......')
+    console.log('new group created.......')
     newGroup = new ChatGroup({
       name: req.body.chatgroupname,
       project: newProject._id
@@ -399,7 +399,7 @@ router.delete('/:id', passport.authenticate('jwt', { session: false }), (req, re
 })
 
 
-// @route  Get api/poject/:id/uploads
+// @route  Get api/project/:id/uploads
 // @desc   Get project uploads
 // @access Public
 router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), upload.single('file'), (req, res) => {
@@ -426,7 +426,7 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
     })
 })
 
-// @route  Get api/poject/:id/uploads
+// @route  Get api/project/:id/uploads
 // @desc   Get project uploads
 // @access Public
 router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), upload.single('file'), (req, res) => {
@@ -454,7 +454,7 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
 })
 
 
-// @route  Delete api/poject/:id/uploads
+// @route  Delete api/project/:id/uploads
 // @desc   Delete project uploads
 // @access Public
 router.delete('/:id/uploads/:upload_id', passport.authenticate('jwt', { session: false }), (req, res) => {
