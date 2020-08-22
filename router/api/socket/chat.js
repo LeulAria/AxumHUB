@@ -2,7 +2,7 @@ const server = require('../../../server')
 const Chat = require('../../../models/ChatGroup')
 const Uesr = require("../../../models/User")
 const socket = require('socket.io')
-const io = socket(server)
+const io = socket(server, { log: false, origins: '*:*' })
 
 const formatChatMessage = require('./formatChatMessage')
 

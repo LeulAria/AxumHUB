@@ -418,7 +418,6 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
 
   Project.findById(req.params.id)
     .then((project) => {
-      console.log('+++++++++++++++++++++: ', project)
       project.uploads.unshift(uploadData)
       return project.save()
     })
@@ -445,7 +444,6 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
 
   Project.findById(req.params.id)
     .then((project) => {
-      console.log('+++++++++++++++++++++: ', project)
       project.uploads.unshift(uploadData)
       return project.save()
     })
@@ -459,12 +457,8 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
     })
 })
 
-<<<<<<< HEAD
-// @route  Delete api/poject/:id/uploads
-=======
 
 // @route  Delete api/project/:id/uploads
->>>>>>> a406c3f92a3594a436afb5bd6be7efdc9a164a88
 // @desc   Delete project uploads
 // @access Public
 router.delete('/:id/uploads/:upload_id', passport.authenticate('jwt', { session: false }), (req, res) => {

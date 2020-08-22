@@ -6,7 +6,7 @@ const app = express();
 // .env config
 require('dotenv').config()
 
-// app run mode
+// app run mode 
 // process.env.MODE = "development";
 process.env.MODE = "production";
 
