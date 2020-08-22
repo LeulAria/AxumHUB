@@ -18,11 +18,15 @@ router.post('/sendJoinRequest', passport.authenticate('jwt', { session: false })
         <img src="https://vignette.wikia.nocookie.net/totalwar/images/9/9d/Aksum_Faction_Card.png/revision/latest?cb=20151209062036" style="width:200px;height:200px;margin: 10px auto;" />
         <h1 style="color: #fff;">AxumHUB</h1>
         <br>
+<<<<<<< HEAD
         <p style="color: #fff;">axum hub is an online community communication and colaboation platform.</p>
+=======
+        <p style="color: #fff;"|>axum hub is an online community communication and collaboration platform.</p>
+>>>>>>> a406c3f92a3594a436afb5bd6be7efdc9a164a88
         <p>${sender} sent a project join request</p>
         <a href="https://axumhubio.netlify.app" style="background: #56B;color:#fff;text-decoration:none;font-size: 1.1em;padding: 10px 1em;margin:1em auto;border-radius:5px;box-shadow: 0 2px 10px rgba(0,0,0,0.8)">Login/Signup in to Axumhub</a>
 
-        <p  style="color: #fff;">after loggin in try to search <b style="margin: 0 10px;text-decoration: underline;">${projectname}</b> in the projects app and click the join request icon.</p>
+        <p  style="color: #fff;">after login try to search <b style="margin: 0 10px;text-decoration: underline;">${projectname}</b> in the projects app and click the join request icon.</p>
         <br>
         <p style="width: 300px; margin: 10px auto; border-radius: 15px; background: #fff; color: #333; padding: 5px 1em;">Thanks for using our service!</p>
       </div>

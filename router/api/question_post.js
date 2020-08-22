@@ -23,20 +23,20 @@ router.get('/all', (req, res) => {
     .sort({ date: -1 })
     .then(questions => {
       if (!questions) {
-        res.status(400).json({ noquestions: 'No Questions Foud...' })
+        res.status(400).json({ noquestions: 'No Questions Found...' })
       }
 
       res.json(questions)
     })
     .catch(err => {
       console.log(err)
-      res.status(400).json({ noquestions: 'No Questions Foud...' })
+      res.status(400).json({ noquestions: 'No Questions Found...' })
     })
 })
 
 // @route  Get api/question_post/:id
 // @desc   Get single post item by id
-// @access Publit
+// @access Public
 router.get('/:id', (req, res) => {
   QuestionPost.findById(req.params.id)
     .populate('user', ['name'])
@@ -66,7 +66,7 @@ router.get('/user_questions/:id', (req, res) => {
 
 
 // @route  Post api/question_post/create
-// @desc   Ceate a new Question Post
+// @desc   Create a new Question Post
 // @access Private
 router.post('/create', passport.authenticate('jwt', { session: false }), (req, res) => {
   console.log('we are here...')

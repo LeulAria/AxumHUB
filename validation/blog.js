@@ -16,7 +16,7 @@ module.exports = validateBlogInput = (data) => {
     errors.slug = "Slug field is required"
 
   if (!Validator.isLength(data.title, { min: 5, max: 50 })) {
-    errors.title = "Title fied should be 5 - 50 characters long"
+    errors.title = "Title field should be 5 - 50 characters long"
   }
 
   return {

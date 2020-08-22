@@ -1,5 +1,6 @@
 const express = require('express')
 const router = express.Router()
+const axios = require('axios')
 
 // auth
 const jwt = require('jsonwebtoken')
@@ -21,8 +22,8 @@ const validateLoginInput = require('../../validation/login')
 // @route  POST api/users/register
 // @desc   Register User
 // @access Public
-router.post('/register', (req, res) => {
-  const { errors, isValid } = validateRegisterInput(req.body);
+router.post('/register', async (req, res) => {
+  const { errors, isValid } = await validateRegisterInput(req.body);
 
   if (!isValid)
     return res.status(400).json(errors)
@@ -59,7 +60,7 @@ router.post('/register', (req, res) => {
     })
 });
 
-// @route  POST api/usrs/login
+// @route  POST api/users/login
 // @desc   Login | send JWT
 // @access Public
 router.post('/login', (req, res) => {
@@ -135,7 +136,7 @@ router.post('/login', (req, res) => {
 });
 
 // @route  GET api/users/current
-// @desc   Get currently loged in user
+// @desc   Get currently logged in user
 // @access Private
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
   res.json({
@@ -171,5 +172,105 @@ router.post('/avatar', passport.authenticate('jwt', { session: false }), upload.
         console.log(err)
       })
 })
+
+// @route  POST api/users/etp
+// @desc   Sign In With ETP
+// @access Public
+router.post("/etp", async (req, res) => {
+  const code = req.body.code;
+
+  if (!code) return res.status(400).json({ detail: "There is no code" });
+
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `${process.env.ETP_URL}/o/token/`,
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      data: `client_id=${process.env.CLIENT_ID}&client_secret=${process.env.CLIENT_SECRET}&grant_type=authorization_code&code=${code}`,
+    });
+
+    let config = {
+      headers: { Authorization: `Bearer ${response.data.access_token}` },
+    };
+
+    const user_response = await axios.get(
+      `${process.env.ETP_URL}/api/users/o/userinfo/`,
+      config
+    );
+
+    const data = user_response.data;
+
+    const user = await User.findOne({ email: data.email });
+
+    if (user) {
+      const payload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar
+      }
+      jwt.sign(payload, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+        if (err) {
+          errors.error = "Token Error..";
+          return res.status(500).json(errors);
+        }
+
+        Profile.findOne({ user: user.id }).then(() => {
+          return res.json({
+            success: true,
+            token: "Bearer " + token,
+            user: payload,
+          });
+        });
+      });
+    } else {
+      const newUser = new User({
+        name: data.username,
+        email: data.email,
+        password: data.uuid,
+        avatar: data.picture,
+      });
+      await newUser.save();
+      const payload = {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        avatar: newUser.avatar
+      }
+      jwt.sign(payload, keys.secretOrKey, { expiresIn: 604800 }, (err, token) => {
+        if (err) {
+          return res.status(500).json({ detail: "Token Error." });
+        }
+
+        Profile.findOne({ user: newUser.id }).then((profile) => {
+          if (profile) {
+            return res.json({
+              success: true,
+              token: "Bearer " + token,
+              user: payload,
+            });
+          } else {
+            const userProfile = new Profile({
+              user: newUser.id,
+            });
+
+            userProfile.save().then(() => {
+              return res.json({
+                success: true,
+                token: "Bearer " + token,
+                user: payload,
+              });
+            });
+          }
+        });
+      });
+    }
+  } catch (er) {
+    if (er.response) {
+      return res.status(400).json(er.response.data);
+    }
+    return res.status(400).json(er);
+  }
+});
 
 module.exports = router
