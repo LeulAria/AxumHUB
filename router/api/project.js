@@ -109,9 +109,16 @@ router.get('/joined', passport.authenticate('jwt', { session: false }), (req, re
 // @access Public
 router.get('/:id', (req, res) => {
   Project.findById(req.params.id)
-    .populate('author', ['name', 'avatar'])
-    .populate('contributers', ['name', 'avatar'])
-    .populate('admins', ['name', 'avatar'])
+    .populate('author', ['name', 'avatar', 'email'])
+    .populate('contributers', ['name', 'avatar', 'email'])
+    .populate('admins', ['name', 'avatar', 'email'])
+    .populate({
+      path: 'uploads',
+      populate: [{
+        path: 'userid',
+        model: 'user'
+      }]
+    })
     .then(project => {
       if (!project) {
         return res.status(404).json({ nopost: "Project not found" })
@@ -208,7 +215,6 @@ router.post('/create', passport.authenticate('jwt', { session: false }), (req, r
       res.status(400).json(err)
     })
 })
-
 
 // @route  GET api/project/:id/admins
 // @desc   Get all admins of the project
@@ -452,7 +458,6 @@ router.post('/:id/uploads', passport.authenticate('jwt', { session: false }), up
       res.json(err)
     })
 })
-
 
 // @route  Delete api/poject/:id/uploads
 // @desc   Delete project uploads
