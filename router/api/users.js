@@ -23,41 +23,48 @@ const validateLoginInput = require('../../validation/login')
 // @desc   Register User
 // @access Public
 router.post('/register', async (req, res) => {
+  console.log('---------------------------------------');
+  console.log('ok wtf is this then....: ')
+
   const { errors, isValid } = await validateRegisterInput(req.body);
 
-  if (!isValid)
+  console.log('after validating the output here...')
+
+  if (!isValid) {
+    console.log('fuck we have error........................', errors)
     return res.status(400).json(errors)
+  }
 
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (user) {
-        errors.error = 'Email is already taken';
-        return res.status(400).json(errors)
-      } else {
-        const newUser = new User({
-          name: req.body.name,
-          email: req.body.email,
-          password: req.body.password,
-          avatar: "https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/girl_female_woman_avatar-512.png"
-        })
-
-        bcrypt.genSalt(10, (err, salt) => {
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err
-            newUser.password = hash;
-            newUser.save()
-              .then(user => {
-                console.log('user data here: ', user)
-                res.status(201).json(user)
-              })
-              .catch(err => {
-                console.log(err)
-                res.status(500).json(err)
-              })
-          })
-        })
-      }
+  const user = await User.findOne({ email: req.body.email });
+  // .then(user => {
+  if (user) {
+    errors.error = 'Email is already taken';
+    return res.status(400).json(errors)
+  } else {
+    const newUser = new User({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      avatar: "https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/girl_female_woman_avatar-512.png"
     })
+
+    bcrypt.genSalt(10, (err, salt) => {
+      bcrypt.hash(newUser.password, salt, (err, hash) => {
+        if (err) throw err
+        newUser.password = hash;
+        newUser.save()
+          .then(user => {
+            console.log('user data here: ', user)
+            res.status(201).json(user)
+          })
+          .catch(err => {
+            console.log(err)
+            res.status(500).json(err)
+          })
+      })
+    })
+  }
+  // })
 });
 
 // @route  POST api/users/login

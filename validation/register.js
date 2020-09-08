@@ -4,7 +4,9 @@ const passwordPWNED = require('../utils/PWNED')
 
 const validateRegisterInput = async (data) => {
   let errors = {}
-  let result = await passwordPWNED(data.password)
+  console.log('check PWIND....................')
+  // let result = await passwordPWNED(data.password)
+  console.log('phew check PWIND done....................')
 
   data.name = !isEmpty(data.name) ? data.name : '';
   data.email = !isEmpty(data.email) ? data.email : '';
@@ -26,9 +28,9 @@ const validateRegisterInput = async (data) => {
   if (Validator.isEmpty(data.password))
     errors.password = 'Password field is required'
 
-  if (result > 0){
-    errors.password = `Oh no — pwned! This password has been seen ${result} times before`
-  }
+  // if (result > 0) {
+  // errors.password = `Oh no — pwned! This password has been seen ${result} times before`
+  // }
 
   if (Validator.isEmpty(data.password2))
     errors.password2 = 'Confirm Password field is required'
